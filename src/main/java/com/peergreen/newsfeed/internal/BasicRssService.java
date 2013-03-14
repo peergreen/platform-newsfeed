@@ -22,6 +22,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.UnknownHostException;
 
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
@@ -35,6 +36,7 @@ import org.apache.felix.ipojo.annotations.Provides;
 import com.peergreen.newsfeed.Rss;
 import com.peergreen.newsfeed.RssService;
 import com.peergreen.newsfeed.RssServiceException;
+import com.peergreen.newsfeed.RssServiceNotConnectedException;
 
 /**
  * Implementation of RSS parser.
@@ -76,9 +78,13 @@ public class BasicRssService implements RssService {
         } catch (IOException e) {
             throw new RssServiceException(String.format("Unable to open connection on URL %s", url), e);
         }
+        // Timeout
+        urlConnection.setReadTimeout(500);
         urlConnection.setDefaultUseCaches(false);
         try (InputStream inputStream = urlConnection.getInputStream(); InputStreamReader inputStreamReader = new InputStreamReader(inputStream)) {
             return parse(inputStreamReader);
+        } catch (UnknownHostException e) {
+            throw new RssServiceNotConnectedException(String.format("Unable to parse URL %s", url), e);
         } catch (IOException e) {
             throw new RssServiceException(String.format("Unable to parse URL %s", url), e);
         }
