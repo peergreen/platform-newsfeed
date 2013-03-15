@@ -15,7 +15,6 @@
  */
 package com.peergreen.newsfeed.internal;
 
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -47,29 +46,24 @@ import com.peergreen.newsfeed.RssServiceNotConnectedException;
 @Instantiate
 public class BasicRssService implements RssService {
 
-    public static void main(String[] args) throws Exception {
-        BasicRssService rssService = new BasicRssService();
-
-
-        Reader reader = new FileReader("/Users/benoitf/tmp/my.rss");
-        System.out.println(rssService.parse(reader));
-        reader = new FileReader("/Users/benoitf/tmp/actu.rss");
-        System.out.println(rssService.parse(reader));
-
-
-        URL url = new URL("http://feeds.macbidouille.com/macbidouille/");
-        reader = new InputStreamReader(url.openStream());
-        System.out.println(rssService.parse(reader));
-
-
-    }
-
+    /**
+     * Rss parser.
+     */
     private final RssParser rssParser;
 
+    /**
+     * Creates the RSS parser.
+     */
     public BasicRssService() {
         this.rssParser = new RssParser();
     }
 
+    /**
+     * Parse the given URL.
+     * @param url
+     * @return
+     * @throws RssServiceException
+     */
     @Override
     public Rss parse(URL url) throws RssServiceException {
         URLConnection urlConnection;
@@ -79,6 +73,7 @@ public class BasicRssService implements RssService {
             throw new RssServiceException(String.format("Unable to open connection on URL %s", url), e);
         }
         // Timeout
+        urlConnection.setConnectTimeout(500);
         urlConnection.setReadTimeout(500);
         urlConnection.setDefaultUseCaches(false);
         try (InputStream inputStream = urlConnection.getInputStream(); InputStreamReader inputStreamReader = new InputStreamReader(inputStream)) {
