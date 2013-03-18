@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.UnknownHostException;
@@ -78,7 +79,11 @@ public class BasicRssService implements RssService {
         urlConnection.setDefaultUseCaches(false);
         try (InputStream inputStream = urlConnection.getInputStream(); InputStreamReader inputStreamReader = new InputStreamReader(inputStream)) {
             return parse(inputStreamReader);
+        } catch (SocketTimeoutException e) {
+            // connect timeout
+            throw new RssServiceNotConnectedException(String.format("Unable to parse URL %s", url), e);
         } catch (UnknownHostException e) {
+            // read timeout
             throw new RssServiceNotConnectedException(String.format("Unable to parse URL %s", url), e);
         } catch (IOException e) {
             throw new RssServiceException(String.format("Unable to parse URL %s", url), e);
