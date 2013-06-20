@@ -27,4 +27,10 @@ public interface Rss extends Element {
      * @return items
      */
     Collection<FeedMessage> getItems();
+
+    /**
+     * @return items
+     */
+    Collection<FeedMessage> getItems(int maxNumber);
+
 }

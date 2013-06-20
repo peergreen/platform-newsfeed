@@ -17,6 +17,7 @@ package com.peergreen.newsfeed.internal;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import com.peergreen.newsfeed.FeedMessage;
 import com.peergreen.newsfeed.Rss;
@@ -27,20 +28,26 @@ import com.peergreen.newsfeed.Rss;
  */
 public class DefaultRss extends DefaultElement implements Rss {
 
-    private Collection<FeedMessage> items;
+    private final List<FeedMessage> items;
 
     public DefaultRss() {
         this.items= new ArrayList<>();
     }
 
-    public void setItems(Collection<FeedMessage> items) {
-        this.items = items;
-    }
-
-
     @Override
     public Collection<FeedMessage> getItems() {
         return items;
+    }
+
+    @Override
+    public Collection<FeedMessage> getItems(int maxNumber) {
+        Collection<FeedMessage> list = new ArrayList<>();
+        int i = 0;
+        while (i < maxNumber && i < items.size()) {
+            list.add(items.get(i));
+            i++;
+        }
+        return list;
     }
 
     @Override
